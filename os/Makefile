@@ -1,27 +1,36 @@
+TARGET := riscv64gc-unknown-none-elf
+MODE := debug
+TARGET_DIR := target/$(TARGET)/$(MODE)
+ELF := $(TARGET_DIR)/os
+BIN := $(ELF).bin
+BOOTLOADER := ../bootloader/rustsbi-qemu.bin
+OBJCOPY := rust-objcopy
+
 clean:
 	@cargo clean
 
-build: clean
+elf:
 	@cargo build
 
-objcopy: build
-	@rust-objcopy -O binary -S \
-		target/riscv64gc-unknown-none-elf/debug/os \
-		target/riscv64gc-unknown-none-elf/debug/os.bin
+binary: elf
+	@$(OBJCOPY) -S -O binary \
+		$(ELF) $(BIN)
 
-run: objcopy
+build: binary
+
+run: build
 	@qemu-system-riscv64 -M virt \
 		-display none -serial stdio \
-		-bios ../bootloader/rustsbi-qemu.bin \
-		-device loader,file=target/riscv64gc-unknown-none-elf/debug/os.bin,addr=0x80200000
+		-bios $(BOOTLOADER) \
+		-device loader,file=$(BIN),addr=0x80200000
 
-server: objcopy
+server: build
 	@qemu-system-riscv64 -s -S -M virt \
 		-display none -serial stdio \
-		-bios ../bootloader/rustsbi-qemu.bin \
-		-device loader,file=target/riscv64gc-unknown-none-elf/debug/os.bin,addr=0x80200000
+		-bios $(BOOTLOADER) \
+		-device loader,file=$(BIN),addr=0x80200000
 
 client:
 	@riscv64-unknown-elf-gdb-py \
-		-ex "file target/riscv64gc-unknown-none-elf/debug/os" \
+		-ex "file $(ELF)" \
 		-ex "target remote localhost:1234"

@@ -4,18 +4,18 @@ APP_DIR := src/bin
 TARGET_DIR := target/$(TARGET)/$(MODE)
 APPS := $(wildcard $(APP_DIR)/*.rs)
 ELFS := $(patsubst $(APP_DIR)/%.rs, $(TARGET_DIR)/%, $(APPS))
-BINS := $(patsubst $(APP_DIR)/%.rs, $(TARGET_DIR)/%.bin, $(APPS))
+OBJCOPY := rust-objcopy
 
-OBJDUMP := rust-objdump --arch-name=riscv64
-OBJCOPY := rust-objcopy --binary-architecture=riscv64
+clean:
+	@cargo clean
 
 elf:
 	@cargo build
-	@echo $(APPS)
-	@echo $(ELFS)
-	@echo $(BINS)
 
 binary: elf
-	$(foreach elf, $(ELFS), $(OBJCOPY) $(elf) --strip-all -O binary $(patsubst $(TARGET_DIR)/%, $(TARGET_DIR)/%.bin, $(elf));)
+	@$(foreach ELF, $(ELFS), \
+		$(OBJCOPY) -S -O binary \
+		$(ELF) $(ELF).bin; \
+	)
 
 build: binary

@@ -1,9 +1,7 @@
 ENTRY(start)
-
 BASE_ADDRESS = 0x80400000;
 
-SECTIONS
-{
+SECTIONS {
     . = BASE_ADDRESS;
 
     .text : {
@@ -22,14 +20,13 @@ SECTIONS
     }
 
     .bss : {
-        start_bss = .;
+        bss_start = .;
         *(.bss .bss.*)
         *(.sbss .sbss.*)
-        end_bss = .;
+        bss_end = .;
     }
 
     /DISCARD/ : {
         *(.eh_frame)
-        *(.debug*)
     }
 }

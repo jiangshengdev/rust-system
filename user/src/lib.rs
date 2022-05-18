@@ -25,14 +25,14 @@ fn main() -> i32 {
 
 fn clear_bss() {
     extern "C" {
-        fn start_bss();
-        fn end_bss();
+        fn bss_start();
+        fn bss_end();
     }
 
-    let start_bss = start_bss as usize;
-    let end_bss = end_bss as usize;
+    let bss_start = bss_start as usize;
+    let bss_end = bss_end as usize;
 
-    (start_bss..end_bss).for_each(|addr| unsafe {
+    (bss_start..bss_end).for_each(|addr| unsafe {
         (addr as *mut u8).write_volatile(0);
     });
 }

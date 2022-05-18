@@ -20,7 +20,9 @@ fn clear_bss() {
     let bss_start = bss_start as usize;
     let bss_end = bss_end as usize;
 
-    (bss_start..bss_end).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    (bss_start..bss_end).for_each(|addr| unsafe {
+        (addr as *mut u8).write_volatile(0);
+    });
 }
 
 #[no_mangle]

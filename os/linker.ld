@@ -1,8 +1,7 @@
 ENTRY(start)
 BASE_ADDRESS = 0x80200000;
 
-SECTIONS
-{
+SECTIONS {
     . = BASE_ADDRESS;
     kernel_start = .;
 
