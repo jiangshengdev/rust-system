@@ -65,6 +65,7 @@ struct AppManager {
 impl AppManager {
     pub fn print_app_info(&self) {
         println!("[kernel] num_app = {}", self.num_app);
+
         for i in 0..self.num_app {
             println!(
                 "[kernel] app_{} [{:#x}, {:#x})",
@@ -114,12 +115,16 @@ lazy_static! {
             extern "C" {
                 fn _num_app();
             }
+
             let num_app_ptr = _num_app as usize as *const usize;
             let num_app = num_app_ptr.read_volatile();
+
             let mut app_start: [usize; MAX_APP_NUM + 1] = [0; MAX_APP_NUM + 1];
             let app_start_raw: &[usize] =
                 core::slice::from_raw_parts(num_app_ptr.add(1), num_app + 1);
+
             app_start[..=num_app].copy_from_slice(app_start_raw);
+
             AppManager {
                 num_app,
                 current_app: 0,
