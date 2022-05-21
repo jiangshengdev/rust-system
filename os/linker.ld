@@ -1,4 +1,4 @@
-ENTRY(start)
+ENTRY(_start)
 BASE_ADDRESS = 0x80200000;
 
 SECTIONS {
