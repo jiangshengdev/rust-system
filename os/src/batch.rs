@@ -32,12 +32,21 @@ impl KernelStack {
     fn get_sp(&self) -> usize {
         self.data.as_ptr() as usize + KERNEL_STACK_SIZE
     }
+
     pub fn push_context(&self, cx: TrapContext) -> &'static mut TrapContext {
-        let cx_ptr = (self.get_sp() - core::mem::size_of::<TrapContext>()) as *mut TrapContext;
+        let kernel_stack_top = self.get_sp();
+        let context_size = core::mem::size_of::<TrapContext>();
+
+        let cx_ptr = (kernel_stack_top - context_size) as *mut TrapContext;
+
         unsafe {
             *cx_ptr = cx;
         }
-        unsafe { cx_ptr.as_mut().unwrap() }
+
+        unsafe {
+            let context = cx_ptr.as_mut().unwrap();
+            context
+        }
     }
 }
 
@@ -70,14 +79,23 @@ impl AppManager {
         if app_id >= self.num_app {
             panic!("All applications completed!");
         }
+
         println!("[kernel] Loading app_{}", app_id);
         asm!("fence.i");
-        core::slice::from_raw_parts_mut(APP_BASE_ADDRESS as *mut u8, APP_SIZE_LIMIT).fill(0);
-        let app_src = core::slice::from_raw_parts(
-            self.app_start[app_id] as *const u8,
-            self.app_start[app_id + 1] - self.app_start[app_id],
-        );
-        let app_dst = core::slice::from_raw_parts_mut(APP_BASE_ADDRESS as *mut u8, app_src.len());
+
+        let app_base_address = APP_BASE_ADDRESS as *mut u8;
+
+        core::slice::from_raw_parts_mut(app_base_address, APP_SIZE_LIMIT).fill(0);
+
+        let app_start = self.app_start[app_id];
+        let app_end = self.app_start[app_id + 1];
+
+        let app_start_address = app_start as *const u8;
+        let app_len = app_end - app_start;
+
+        let app_src = core::slice::from_raw_parts(app_start_address, app_len);
+        let app_dst = core::slice::from_raw_parts_mut(app_base_address, app_src.len());
+
         app_dst.copy_from_slice(app_src);
     }
 
@@ -122,19 +140,25 @@ pub fn print_app_info() {
 pub fn run_next_app() -> ! {
     let mut app_manager = APP_MANAGER.exclusive_access();
     let current_app = app_manager.get_current_app();
+
     unsafe {
         app_manager.load_app(current_app);
     }
+
     app_manager.move_to_next_app();
     drop(app_manager);
+
     extern "C" {
         fn __restore(cx_addr: usize);
     }
+
+    let user_stack_top = USER_STACK.get_sp();
+    let context = TrapContext::app_init_context(APP_BASE_ADDRESS, user_stack_top);
+    let context_addr = KERNEL_STACK.push_context(context) as *const _ as usize;
+
     unsafe {
-        __restore(KERNEL_STACK.push_context(TrapContext::app_init_context(
-            APP_BASE_ADDRESS,
-            USER_STACK.get_sp(),
-        )) as *const _ as usize);
+        __restore(context_addr);
     }
+
     panic!("Unreachable in batch::run_current_app!");
 }

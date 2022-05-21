@@ -19,8 +19,12 @@ pub fn init() {
     extern "C" {
         fn __alltraps();
     }
+
+    let __alltraps = __alltraps as usize;
+    let direct = TrapMode::Direct;
+
     unsafe {
-        stvec::write(__alltraps as usize, TrapMode::Direct);
+        stvec::write(__alltraps, direct);
     }
 }
 
