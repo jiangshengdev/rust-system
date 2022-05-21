@@ -28,14 +28,18 @@ fn main() -> ! {
     extern "C" {
         fn text_start();
         fn text_end();
+
         fn rodata_start();
         fn rodata_end();
+
         fn data_start();
         fn data_end();
-        fn bss_start();
-        fn bss_end();
+
         fn boot_stack();
         fn boot_stack_top();
+
+        fn bss_start();
+        fn bss_end();
     }
 
     clear_bss();
@@ -44,12 +48,16 @@ fn main() -> ! {
 
     let text_start = text_start as usize;
     let text_end = text_end as usize;
+
     let rodata_start = rodata_start as usize;
     let rodata_end = rodata_end as usize;
+
     let data_start = data_start as usize;
     let data_end = data_end as usize;
+
     let boot_stack = boot_stack as usize;
     let boot_stack_top = boot_stack_top as usize;
+
     let bss_start = bss_start as usize;
     let bss_end = bss_end as usize;
 
