@@ -11,7 +11,7 @@ mod syscall;
 
 #[no_mangle]
 #[link_section = ".text.entry"]
-fn start() -> ! {
+fn _start() -> ! {
     clear_bss();
     exit(main());
     panic!("unreachable after sys_exit!");
