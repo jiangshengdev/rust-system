@@ -64,10 +64,10 @@ struct AppManager {
 
 impl AppManager {
     pub fn print_app_info(&self) {
-        println!("[kernel] num_app = {}", self.num_app);
+        info!("[kernel] num_app = {}", self.num_app);
 
         for i in 0..self.num_app {
-            println!(
+            trace!(
                 "[kernel] app_{} [{:#x}, {:#x})",
                 i,
                 self.app_start[i],
@@ -81,7 +81,7 @@ impl AppManager {
             panic!("All applications completed!");
         }
 
-        println!("[kernel] Loading app_{}", app_id);
+        info!("[kernel] Loading app_{}", app_id);
         asm!("fence.i");
 
         let app_base_address = APP_BASE_ADDRESS as *mut u8;
