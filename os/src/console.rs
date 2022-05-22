@@ -49,31 +49,31 @@ pub enum Level {
     Trace,
 }
 
-pub struct LevelConfig {
+pub struct LevelStyle {
     pub color_code: u8,
     pub prefix: &'static str,
 }
 
 impl Level {
-    pub fn get_config(&self) -> LevelConfig {
+    pub fn get_style(&self) -> LevelStyle {
         match self {
-            Level::Error => LevelConfig {
+            Level::Error => LevelStyle {
                 color_code: 31,
                 prefix: "💥 ",
             },
-            Level::Warn => LevelConfig {
+            Level::Warn => LevelStyle {
                 color_code: 93,
                 prefix: "✨ ",
             },
-            Level::Info => LevelConfig {
+            Level::Info => LevelStyle {
                 color_code: 34,
                 prefix: "📎 ",
             },
-            Level::Debug => LevelConfig {
+            Level::Debug => LevelStyle {
                 color_code: 32,
                 prefix: "🐛 ",
             },
-            Level::Trace => LevelConfig {
+            Level::Trace => LevelStyle {
                 color_code: 90,
                 prefix: "🐾 ",
             },
@@ -83,13 +83,13 @@ impl Level {
 
 macro_rules! log {
     ($lvl: expr, $fmt: literal $(, $($arg: tt)+)?) => {
-        let config = $lvl.get_config();
+        let style = $lvl.get_style();
         $crate::console::print_in_color(
             format_args!(
                 concat!("{}", $fmt, "\n"),
-                config.prefix $(, $($arg)+)?
+                style.prefix $(, $($arg)+)?
             ),
-            config.color_code
+            style.color_code
         );
     }
 }
