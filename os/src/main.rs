@@ -13,8 +13,8 @@ mod sync;
 pub mod syscall;
 pub mod trap;
 
-global_asm!(include_str!("entry.asm"));
-global_asm!(include_str!("link_app.asm"));
+global_asm!(include_str!("entry.S"));
+global_asm!(include_str!("link_app.S"));
 
 fn clear_bss() {
     extern "C" {
