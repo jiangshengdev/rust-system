@@ -9,7 +9,7 @@ mod console;
 mod lang_items;
 mod sbi;
 
-global_asm!(include_str!("entry.asm"));
+global_asm!(include_str!("entry.S"));
 
 fn clear_bss() {
     extern "C" {
