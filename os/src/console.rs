@@ -82,7 +82,7 @@ impl Level {
 }
 
 macro_rules! log {
-    ($lvl: expr, $fmt: literal $(, $($arg: tt)+)?) => {
+    ($lvl: expr, $fmt: literal $(, $($arg: tt)+)?) => {{
         let style = $lvl.get_style();
         $crate::console::print_in_color(
             format_args!(
@@ -91,7 +91,7 @@ macro_rules! log {
             ),
             style.color_code
         );
-    }
+    }}
 }
 
 #[macro_export]
