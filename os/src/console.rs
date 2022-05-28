@@ -49,9 +49,9 @@ pub enum Level {
     Trace,
 }
 
-pub struct Style {
+pub struct Style<'a> {
     pub color_code: u8,
-    pub prefix: &'static str,
+    pub prefix: &'a str,
 }
 
 impl Level {
