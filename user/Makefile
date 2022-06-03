@@ -13,9 +13,9 @@ elf:
 	@cargo build
 
 binary: elf
-	@$(foreach ELF, $(ELFS), \
+	@$(foreach elf, $(ELFS), \
 		$(OBJCOPY) -S -O binary \
-		$(ELF) $(ELF).bin; \
+		$(elf) $(elf).bin; \
 	)
 
 build: binary
