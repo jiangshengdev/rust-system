@@ -30,7 +30,8 @@ lazy_static! {
             task_status: TaskStatus::UnInit,
         }; MAX_APP_NUM];
         for (i, task) in tasks.iter_mut().enumerate() {
-            task.task_cx = TaskContext::goto_restore(init_app_cx(i));
+            let app_cx = init_app_cx(i);
+            task.task_cx = TaskContext::goto_restore(app_cx);
             task.task_status = TaskStatus::Ready;
         }
         TaskManager {
