@@ -8,7 +8,6 @@ use riscv::register::{
 
 pub use context::TrapContext;
 
-use crate::batch::run_next_app;
 use crate::syscall::syscall;
 
 mod context;
@@ -40,11 +39,13 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
         }
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             warn!("[kernel] PageFault in application, kernel killed it.");
-            run_next_app();
+            panic!("[kernel] Cannot continue!");
+            // run_next_app();
         }
         Trap::Exception(Exception::IllegalInstruction) => {
             warn!("[kernel] IllegalInstruction in application, kernel killed it.");
-            run_next_app();
+            panic!("[kernel] Cannot continue!");
+            // run_next_app();
         }
         _ => {
             panic!(

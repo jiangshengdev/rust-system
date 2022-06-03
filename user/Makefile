@@ -10,7 +10,7 @@ clean:
 	@cargo clean
 
 elf:
-	@cargo build
+	@python3 build.py
 
 binary: elf
 	@$(foreach ELF, $(ELFS), \
