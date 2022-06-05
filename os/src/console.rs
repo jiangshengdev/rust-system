@@ -49,31 +49,31 @@ pub enum Level {
     Trace,
 }
 
-pub struct LevelStyle {
+pub struct Style<'a> {
     pub color_code: u8,
-    pub prefix: &'static str,
+    pub prefix: &'a str,
 }
 
 impl Level {
-    pub fn get_style(&self) -> LevelStyle {
+    pub fn get_style(&self) -> Style {
         match self {
-            Level::Error => LevelStyle {
+            Level::Error => Style {
                 color_code: 31,
                 prefix: "💥 ",
             },
-            Level::Warn => LevelStyle {
+            Level::Warn => Style {
                 color_code: 93,
                 prefix: "✨ ",
             },
-            Level::Info => LevelStyle {
+            Level::Info => Style {
                 color_code: 34,
                 prefix: "📎 ",
             },
-            Level::Debug => LevelStyle {
+            Level::Debug => Style {
                 color_code: 32,
                 prefix: "🐛 ",
             },
-            Level::Trace => LevelStyle {
+            Level::Trace => Style {
                 color_code: 90,
                 prefix: "🐾 ",
             },

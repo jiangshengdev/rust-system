@@ -10,12 +10,12 @@ clean:
 	@cargo clean
 
 elf:
-	@cargo build
+	@python3 build.py
 
 binary: elf
-	@$(foreach ELF, $(ELFS), \
+	@$(foreach elf, $(ELFS), \
 		$(OBJCOPY) -S -O binary \
-		$(ELF) $(ELF).bin; \
+		$(elf) $(elf).bin; \
 	)
 
 build: binary
