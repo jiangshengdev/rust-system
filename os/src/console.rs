@@ -41,6 +41,7 @@ macro_rules! println {
     }
 }
 
+#[allow(unused)]
 pub enum Level {
     Error,
     Warn,

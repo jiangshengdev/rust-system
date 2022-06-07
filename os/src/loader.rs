@@ -59,6 +59,7 @@ pub fn get_num_app() -> usize {
     unsafe { (_num_app as usize as *const usize).read_volatile() }
 }
 
+#[allow(unused)]
 pub fn load_apps() {
     extern "C" {
         fn _num_app();

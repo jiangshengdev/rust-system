@@ -13,6 +13,7 @@ mod board;
 mod console;
 mod config;
 mod lang_items;
+mod lists;
 mod loader;
 mod mm;
 mod sbi;
@@ -25,6 +26,7 @@ pub mod trap;
 global_asm!(include_str!("entry.S"));
 global_asm!(include_str!("link_app.S"));
 
+#[allow(unused)]
 fn clear_bss() {
     extern "C" {
         fn bss_start();
@@ -41,14 +43,7 @@ fn clear_bss() {
 
 #[no_mangle]
 fn main() -> ! {
-    clear_bss();
-    println!("[kernel] Hello, world!");
     mm::init();
-    println!("[kernel] back to world!");
-    trap::init();
-    loader::load_apps();
-    trap::enable_timer_interrupt();
-    timer::set_next_trigger();
-    task::run_first_task();
+    lists::test();
     panic!("Unreachable in rust_main!");
 }
