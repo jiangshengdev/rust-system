@@ -1,24 +1,15 @@
 use alloc::boxed::Box;
 use core::mem;
 
-#[derive(Debug)]
 pub struct List {
     head: Link,
 }
 
-#[derive(Debug)]
 enum Link {
     Empty,
     More(Box<Node>),
 }
 
-impl Default for Link {
-    fn default() -> Self {
-        Link::Empty
-    }
-}
-
-#[derive(Debug)]
 struct Node {
     elem: i32,
     next: Link,
@@ -30,16 +21,16 @@ impl List {
     }
 
     pub fn push(&mut self, elem: i32) {
-        let head = mem::take(&mut self.head);
-        let new_node = Box::new(Node { elem, next: head });
+        let new_node = Box::new(Node {
+            elem,
+            next: mem::replace(&mut self.head, Link::Empty),
+        });
 
         self.head = Link::More(new_node);
     }
 
     pub fn pop(&mut self) -> Option<i32> {
-        let head = mem::take(&mut self.head);
-
-        match head {
+        match mem::replace(&mut self.head, Link::Empty) {
             Link::Empty => None,
             Link::More(node) => {
                 self.head = node.next;
@@ -51,57 +42,42 @@ impl List {
 
 impl Drop for List {
     fn drop(&mut self) {
-        let mut cur_link = mem::take(&mut self.head);
+        let mut cur_link = mem::replace(&mut self.head, Link::Empty);
+
         while let Link::More(mut boxed_node) = cur_link {
-            cur_link = mem::take(&mut boxed_node.next);
+            cur_link = mem::replace(&mut boxed_node.next, Link::Empty);
         }
     }
 }
 
-pub fn basics() {
-    let mut list = List::new();
+pub fn test() {
+    basics();
 
-    let list_size = mem::size_of::<List>();
-    let link_size = mem::size_of::<Link>();
-    let node_size = mem::size_of::<Node>();
+    fn basics() {
+        let mut list = List::new();
 
-    println!("{}", list_size);
-    println!("{}", link_size);
-    println!("{}", node_size);
+        // Check empty list behaves right
+        assert_eq!(list.pop(), None);
 
-    // Check empty list behaves right
-    assert_eq!(list.pop(), None);
+        // Populate list
+        list.push(1);
+        list.push(2);
+        list.push(3);
 
-    println!("{:#?}", list);
+        // Check normal removal
+        assert_eq!(list.pop(), Some(3));
+        assert_eq!(list.pop(), Some(2));
 
-    // Populate list
-    list.push(1);
-    list.push(2);
-    list.push(3);
+        // Push some more just to make sure nothing's corrupted
+        list.push(4);
+        list.push(5);
 
-    println!("{:#?}", list);
+        // Check normal removal
+        assert_eq!(list.pop(), Some(5));
+        assert_eq!(list.pop(), Some(4));
 
-    // Check normal removal
-    assert_eq!(list.pop(), Some(3));
-    assert_eq!(list.pop(), Some(2));
-
-    println!("{:#?}", list);
-
-    // Push some more just to make sure nothing's corrupted
-    list.push(4);
-    list.push(5);
-
-    println!("{:#?}", list);
-
-    // Check normal removal
-    assert_eq!(list.pop(), Some(5));
-    assert_eq!(list.pop(), Some(4));
-
-    println!("{:#?}", list);
-
-    // Check exhaustion
-    assert_eq!(list.pop(), Some(1));
-    assert_eq!(list.pop(), None);
-
-    println!("{:#?}", list);
+        // Check exhaustion
+        assert_eq!(list.pop(), Some(1));
+        assert_eq!(list.pop(), None);
+    }
 }

@@ -1,5 +1,7 @@
 mod first;
+mod second;
 
-pub(crate) fn test() {
-    first::basics();
+pub fn test() {
+    first::test();
+    second::test();
 }
